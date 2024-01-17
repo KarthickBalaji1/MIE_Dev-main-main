@@ -188,6 +188,7 @@ benificiaryName : string = ''
     this.eventInitiation4Speaker = new FormGroup({
       speakerName : new FormControl('',[Validators.required]),
       speakerMisCode : new FormControl('', MISValidator),
+      speakerGonGo : new FormControl('',[Validators.required])
     })
 
     this.eventInitiation4Other = new FormGroup({
@@ -204,7 +205,7 @@ benificiaryName : string = ''
       isHonararium:new FormControl('',[Validators.required]),
       honorariumAmount:new FormControl('',[Validators.required],),
       isTravelRequired:new FormControl('',[Validators.required]),
-      travelamount:new FormControl('',[Validators.required]),
+      travelamout:new FormControl('',[Validators.required]),
       isBTCBTE:new FormControl('',[Validators.required]),
       isAccomRequired: new FormControl('',[Validators.required]),
       AccomAmount:new FormControl('',[Validators.required]),
@@ -214,6 +215,14 @@ benificiaryName : string = ''
       timecalculationhonorariumifYes:new FormControl('',Validators.required),
       presentationDuration:new FormControl('',[Validators.required]),
       panelSessionPreparation:new FormControl('',[Validators.required]),
+      benficiaryName : new FormControl('',[Validators.required]),
+      bankAccountNumber : new FormControl('',),
+       nameAsPan : new FormControl('',[Validators.required]),
+       panCardNumber : new FormControl('',[Validators.required]),
+       ifscCode : new FormControl('',[Validators.required]),
+       emailId : new FormControl(''),
+       uploadPAN : new FormControl('',[Validators.required]),
+       uploadCheque : new FormControl('',[Validators.required]),
       qaSession:new FormControl('',[Validators.required]),
       briefingDuration:new FormControl('',[Validators.required]),
       panelDiscussionDuration:new FormControl('',[Validators.required]),
@@ -297,6 +306,8 @@ benificiaryName : string = ''
   static withIn30Days : boolean;
  
 
+  
+  
   event1FormPrepopulate(){
     this.eventInitiation1.valueChanges.subscribe(changes => {
       if(changes.eventDate){
@@ -364,7 +375,7 @@ benificiaryName : string = ''
   filteredCity : any;
 
   // New Values
-  eventType : string = 'EVT1'
+  eventType : string = 'EVTC1'
   eventDate : string ;
 
   event2FormPrepopulate(){
@@ -394,8 +405,10 @@ benificiaryName : string = ''
 
   // Adding value to Brand Tables
   showBrandTable : boolean = false;
+  showHcptable : boolean = false;
   brandTableDetails : any[] = [];
-
+HcpDetails : any[] = [];
+slidekitDetails : any[] = [];
   brandNames : any;
 
   // New Values:
@@ -421,6 +434,7 @@ benificiaryName : string = ''
       // this.showBrandTable = true;
       // 
       const brand = {
+        
         BrandName : this.brandNames.find(brand => brand.BrandId == this.eventInitiation3.value.brandName).BrandName,
         PercentAllocation : this.percentageAllocation+"",
         ProjectId : this.projectId
@@ -470,6 +484,7 @@ benificiaryName : string = ''
   
   approvedSpeakers : any;
   filteredspeakers : any;
+  filteredSpeakerMIS:any;
   MISCode:any;
 
   showOtherHCPRoleTextBox : boolean = false;
@@ -537,6 +552,13 @@ benificiaryName : string = ''
   hcpRoleWritten : string = '';
   misCode : string = '';
 
+  private _getFilteredSpeakerMIS(misCode){
+    return this.approvedSpeakers.find(speaker => {
+      return speaker.MISCode === misCode
+    })
+
+  }
+
   event4FormSpeakerPrepopulate(){
     
     this.eventInitiation4Speaker.valueChanges.subscribe(
@@ -549,6 +571,7 @@ benificiaryName : string = ''
             // console.log("MIS Valli")
             // console.log(this._getFilteredSpeaker(changes.misCode))
             const filteredSpeaker = this._getFilteredSpeaker(changes.speakerName);
+           // const filteredSpeakerMis = this._getFilteredSpeakerMIS(changes.misCode);
             console.log('nan panathu than',filteredSpeaker)
             if(filteredSpeaker){
               this.speakerName  = filteredSpeaker.SpeakerName;
@@ -556,7 +579,7 @@ benificiaryName : string = ''
               this.speakerSpeciality = filteredSpeaker.Speciality;
               this.speakerGoNonGo = (filteredSpeaker.isNonGO == "yes")? 'Non GO' : 'GO';
               this.speakerTier = filteredSpeaker.TierType;  
-              this.misCode = filteredSpeaker.MISCode;
+              //this.misCode = filteredSpeakerMis.misCode;
   
               //this.getRemuneration(this.speakerSpeciality,this.speakerTier);
             }
@@ -589,10 +612,11 @@ benificiaryName : string = ''
 
   calculation()
   {
-    this.eventInitiation4Speaker.valueChanges.subscribe( totalcal =>
+    this.panalselectionstandard.valueChanges.subscribe( totalcal =>
       {
-        this.eventInitiation4Speaker.value.totalHours = totalcal.panelDiscussionDuration+
-        totalcal.briefingDuration + totalcal.qaSession + totalcal.panelSessionPreparation + totalcal.presentationDuration
+        this.totalHours = (parseInt(totalcal.panelDiscussionDuration)+
+       parseInt(totalcal.briefingDuration) + parseInt(totalcal.qaSession) + parseInt(totalcal.panelSessionPreparation) +
+       parseInt(totalcal.presentationDuration))/60
         console.log('this is total hours na panathu ',this.eventInitiation4Speaker.value.totalHours)
       }) 
   }
@@ -634,10 +658,37 @@ benificiaryName : string = ''
   remuneration : any;
   remunerationToCalculate : any;
 
+  
+      private _getSelectedBankDetails(acctNumber : any){
+        return this.vendorDetails.find(ven => {
+          if(ven.BankAccountNumber){
+            // console.log(typeof ven.BankAccountNumber);
+            // console.log(typeof acctNumber)
+            return ven.BankAccountNumber == acctNumber
+          }
+        })
+      }
+    
+      private _filterBankAccounts(value: string): string[] {
+        // console.log(this.employeeDetails)
+        const filterValue = value.toLowerCase();
+        
+        return this.vendorDetails.filter(ven =>{
+          
+          if(ven.BankAccountNumber){
+            const bannAccNum = ven.BankAccountNumber.toString();
+            
+            return bannAccNum.includes(filterValue);
+          }
+          
+        })
+      }
+    
+
 
   honorariumPopulate()
   {
-    this.panalselectionstandard.valueChanges.subscribe( (changes => 
+    this.panalselectionstandard.valueChanges.subscribe( changes => 
       {
         this.IshonorariumYes = (changes.isHonararium == 'Yes')?true:false;
         this.IsTravelYes = (changes.isTravelRequired == 'Yes')?true:false;
@@ -656,52 +707,72 @@ benificiaryName : string = ''
         }
 
         console.log('bank details irukathea idhula ',this.vendorDetails)
-        this.eventInitiation4Speaker.value.bankAccountNumber = (changes.BankAccountNumber);
-        // if(changes.bankAccountNumber)
-        // {
-        //   this.filteredAccounts = this._filterBankAccounts(changes.bankAccountNumber);
-        //   if(this.eventInitiation4Speaker.controls.bankAccountNumber.valid)
-        //   {
-        //     const filteredVendor = this._getSelectedBankDetails(changes.bankAccountNumber);
-        //     if(filteredVendor){
-              
-        //       this.bankAccountNumber = filteredVendor.BankAccountNumber;
-        //       this.benificiaryName = filteredVendor.BeneficiaryName;
-        //       this.nameAsPan = filteredVendor.PanCardName;
-        //       this.panCardNumber = filteredVendor.PanNumber;
-        //       this.ifscCode = filteredVendor.IfscCode
-        //     }
-        //   }
-        // }
-      }
-      
-      ))
-  }
-
-  private _filterBankAccounts(value: string): string[] {
-    // console.log(this.employeeDetails)
-    const filterValue = value.toLowerCase();
+        if(changes.bankAccountNumber){
+                    // console.log(changes.bankAccountNumber)
+                    // console.log(this._filterBankAccounts(changes.bankAccountNumber))
+                    this.filteredAccounts = this._filterBankAccounts(changes.bankAccountNumber);
+                    if(this.panalselectionstandard.controls.bankAccountNumber.valid){
+                      // console.log(this._getSelectedBankDetails(changes.bankAccountNumber))
+                      const filteredVendor = this._getSelectedBankDetails(changes.bankAccountNumber);
+                      if(filteredVendor){
+                        this.bankAccountNumber = filteredVendor.BankAccountNumber;
+                        this.benificiaryName = filteredVendor.BeneficiaryName;
+                        this.nameAsPan = filteredVendor.PanCardName;
+                        this.panCardNumber = filteredVendor.PanNumber;
+                        this.ifscCode = filteredVendor.IfscCode
+                      }
+                    }
+                  }
+                } ) }
     
-    return this.vendorDetails.filter(ven =>{
-      
-      if(ven.BankAccountNumber){
-        const bannAccNum = ven.BankAccountNumber.toString();
-        
-        return bannAccNum.includes(filterValue);
-      }
-      
-    })
 
-  }
-  private _getSelectedBankDetails(acctNumber : any){
-    return this.vendorDetails.find(ven => {
-      if(ven.BankAccountNumber){
-        // console.log(typeof ven.BankAccountNumber);
-        // console.log(typeof acctNumber)
-        return ven.BankAccountNumber == acctNumber
+  addHcpDetails()
+  {
+   
+      const HCPs = {
+        HcpRole : this.eventInitiation4.value.hcpRole,
+        HcpName : this.eventInitiation4Speaker.value.speakerName,
+        MisCode : this.eventInitiation4Speaker.value.speakerMisCode,
+        GonGo : this.eventInitiation4Speaker.value.speakerGoNonGo,
+        
+        isHonararium : this.panalselectionstandard.value.isHonararium,
+       HonorariumAmount : this.panalselectionstandard.value.honorariumAmount,
+       TravelAmount : this.panalselectionstandard.value.travelamout,
+       AccomAmount : this.panalselectionstandard.value.AccomAmount,
+       localconen : this.panalselectionstandard.value.localAmount,
+       finalAmount : this.panalselectionstandard.value.honorariumAmount + this.panalselectionstandard.value.travelamout +
+       this.panalselectionstandard.value.AccomAmount + this.panalselectionstandard.value.localAmount,
+       
       }
-    })
-  }
+      console.log('idhu than MIS code',this.eventInitiation4Speaker.value.speakerTier);
+      this.showHcptable = true;
+      this.HcpDetails.push(HCPs);
+      this.clearingForm();
+      this.slidekitDetails = this.HcpDetails;
+    }
+    
+  
+    clearingForm()
+    {
+      this.eventInitiation4.value.HcpRole = '',
+      this.eventInitiation4.value.HcpName = '',
+      this.eventInitiation4Speaker.value.speakerName = '',
+      this.eventInitiation4Speaker.value.speakerMisCode = '',
+      this.eventInitiation4Speaker.value.speakerCode = '',
+      this.eventInitiation4Speaker.value.speakerSpeciality = '',
+      this.eventInitiation4Speaker.value.speakerTier = '',
+      this.eventInitiation4Speaker.value.speakerGoNonGo = '',
+      this.panalselectionstandard.value.bankAccountNumber = '',
+      this.panalselectionstandard.value.benficiaryName = '',
+      this.panalselectionstandard.value.nameAsPan= '',
+      this.panalselectionstandard.value.panCardNumber = '',
+      this.panalselectionstandard.value.ifscCode = '',
+      this.panalselectionstandard.value.emailId = '',
+      this.panalselectionstandard.value.uploadPAN ='',
+      this.panalselectionstandard.value.uploadCheque =''
+    }
+  
+               
 
   expensepopuplate()
   {
@@ -711,231 +782,265 @@ benificiaryName : string = ''
       })
   }
 
-  // getRemuneration(speciality,tier){
-  //   this.utilityService.getFmv(speciality,tier).subscribe(
-  //     res => {
-  //       console.log(res)
-  //       this.remunerationToCalculate = res;
-  //     },
-  //     err => {
-  //       alert("Unexpected Error Happened")
-  //     }
-  //   )
-  // }
-
-/*
-  // Event Initiation Form6 Control
-  showUploadNOC : boolean = false;
-  showRationale :boolean = false;
-  showOtherCurrencyTextBox : boolean = false;
-
-  vendorDetails : any ;
-  filteredAccounts : any;
-
-  isHonararium : boolean = false;
-  isVendorPresent : boolean = false;
-  // Additional Values:
-  currency : string = '';
-  otherCurrency : string = ''
-  taxSelect : string = '';
-  benificiaryName : string = ''
-  bankAccountNumber : string = ''
-  nameAsPan : string = ''
-  panCardNumber : string = ''
-  ifscCode : string = ''
-  emailId : string = ''
-  uploadPAN : any = '';
-  uploadCheque : any = '';
-
-  event6FormPrepopulate(){
-    this.eventInitiation6.valueChanges.subscribe(
-      changes => {
-        console.log(changes)
-        if(changes.currency == 'other'){
-          this.showOtherCurrencyTextBox = true;
-        }
-        else{
-          this.showOtherCurrencyTextBox = false
-        }
-        if(changes.isHonararium == "Yes"){
-          this.isHonararium = true;
-          // this.eventInitiation6.get('bankAccountNumber').enable();
-          
-        }
-        else{
-          this.isHonararium = false
-          this.bankAccountNumber = '';
-          this.nameAsPan = '';
-          this.panCardNumber = '';
-          this.ifscCode = '';
-          this.emailId = '';
-        }
-        if(changes.bankAccountNumber){
-          // console.log(changes.bankAccountNumber)
-          // console.log(this._filterBankAccounts(changes.bankAccountNumber))
-          this.filteredAccounts = this._filterBankAccounts(changes.bankAccountNumber);
-          if(this.eventInitiation6.controls.bankAccountNumber.valid){
-            // console.log(this._getSelectedBankDetails(changes.bankAccountNumber))
-            const filteredVendor = this._getSelectedBankDetails(changes.bankAccountNumber);
-            if(filteredVendor){
-              this.isVendorPresent = true;
-              this.bankAccountNumber = filteredVendor.BankAccountNumber;
-              this.benificiaryName = filteredVendor.BeneficiaryName;
-              this.nameAsPan = filteredVendor.PanCardName;
-              this.panCardNumber = filteredVendor.PanNumber;
-              this.ifscCode = filteredVendor.IfscCode
-            }
-          }
-        }
-      }
-    )
-  }
-  private _getSelectedBankDetails(acctNumber : any){
-    return this.vendorDetails.find(ven => {
-      if(ven.BankAccountNumber){
-        // console.log(typeof ven.BankAccountNumber);
-        // console.log(typeof acctNumber)
-        return ven.BankAccountNumber == acctNumber
-      }
-    })
-  }
-
-  private _filterBankAccounts(value: string): string[] {
-    // console.log(this.employeeDetails)
-    const filterValue = value.toLowerCase();
-    
-    return this.vendorDetails.filter(ven =>{
-      
-      if(ven.BankAccountNumber){
-        const bannAccNum = ven.BankAccountNumber.toString();
-        
-        return bannAccNum.includes(filterValue);
-      }
-      
-    })
-  }
-
-  // Event Inititaion Form7 COntrol
-  showExpenseTextBox : boolean = false;
-  showTotalExpense : boolean = false;
-
-  expenseTableDetails : any;
-  localConveyanceNeeded : boolean = false;
-
-  event7FormPrepopulate(){
-    this.eventInitiation7.valueChanges.subscribe(
-      changes => {
-      
-        if(changes.expense == 'e2'){
-          this.showExpenseTextBox = true;
-        }
-        else{
-          this.showExpenseTextBox = false;
-        }
-        if(changes.toCalculateExpense == 'Yes'){
-          this.showTotalExpense = true;
-        }
-        else{
-          this.showTotalExpense = false;
-        }
-        if(changes.isLocalConveyance == 'Yes'){
-          this.localConveyanceNeeded = true;
-        }
-        else this.localConveyanceNeeded = false;
-
-        if(changes.invitee && changes.expense && changes.isAdvanceRequired && changes.isExcludingTax && changes.isBtc){
-          console.log(changes)
-        }
-      }
-    )
-  }
-
-  addInviteesToTable(){
-    const invitee = {
-      invitee : 'aa'
-    };
-
-  }  
-  
-  
-
-
-  submitForm(){
-    // console.log(this.eventInitiation1.value);
-    // console.log(this.eventInitiation2.value);
-    // console.log(this.eventInitiation3.value);
-    // console.log(this.eventInitiation4.value);
-    // console.log(this.eventInitiation5.value);
-    // console.log(this.eventInitiation6.value);
-    // console.log(this.eventInitiation7.value);
-
-    if(this.eventInitiation2.value.eventTopic &&  this.eventCode && this.eventInitiation2.value.eventDate &&
-      this.eventInitiation2.value.startTime && this.eventInitiation2.value.endTime  && this.eventInitiation2.value.venueName &&
-      this.eventInitiation2.value.state && this.eventInitiation2.value.city && this.eventInitiation7.value.isAdvanceRequired &&
-      this.eventInitiation3.value.brandName && this.eventInitiation4.value.hcpRole && this.percentageAllocation &&  this.projectId){
-        const class1FinalData1 = {
-          EventTopic : this.eventInitiation2.value.eventTopic,
-          EventType : this.eventDetails.find(event => event.EventTypeId == this.eventCode ).EventType,
-          EventDate : new Date(this.eventInitiation2.value.eventDate),
-          StartTime : this.eventInitiation2.value.startTime,
-          EndTime : this.eventInitiation2.value.endTime,
-          VenueName : this.eventInitiation2.value.venueName,
-          State : this.allStates.find(state => state.StateId == this.eventInitiation2.value.state).StateName,
-          City : this.allCity.find(city => city.CityId == this.eventInitiation2.value.city).CityName,
-          // BeneficiaryName : this.benificiaryName,
-          // BankAccountNumber : this.eventInitiation6.value.bankAccountNumber,
-          // PanName : this.nameAsPan,
-          // PanCardNumber : this.panCardNumber,
-          // IfscCode : this.ifscCode,
-          // EmailId : this.emailId,
-          // Invitees : this.eventInitiation7.value.invitee,
-          IsAdvanceRequired : this.eventInitiation7.value.isAdvanceRequired || 'No',
-          // SelectionOfTaxes : this.taxSelect,
-          BrandName : this._getBrandWithId(this.eventInitiation3.value.brandName).BrandName,
-          HCPRole :   (this.eventInitiation4.value.hcpRole !== 'H6')? this.hcpRoles.find(role =>  role.HCPRoleID === this.eventInitiation4.value.hcpRole).HCPRole : this.hcpRoleWritten, 
-          // InitiatorName : this.auth.decodeToken()['unique_name'],
-          PercentAllocation : this.percentageAllocation.toString(),
-          ProjectId : this.projectId,
-        }
-        console.log(class1FinalData1)
-        this.utilityService.postEvent1Data1(class1FinalData1).subscribe(
-          res => {
-            console.log("Data added successfully");
-            alert('Event Submitted Successfully');
-            this.router.navigate(['dashboard']);
-            
-          },
-          err => alert("Not Added")
-        )
-
-      }
-      else{
-        alert("Some Fields are missing")
-      }
-    
-
-    const class1FinalData2 = {
-      HcpRoleId : this.eventInitiation4.value.hcpRole,
-      MISCode : this.eventInitiation4.value.misCode,
-      SpeakerCode : this.speakerCode,
-      TrainerCode : "null",
-      HonarariumRequired : this.eventInitiation6.value.isHonararium,
-      Speciality : this.speciality,
-      Tier : this.tier,
-      'Go/NGo' : this.goNonGo,
-      PresentationDuration : this.eventInitiation5.value.presentationDuration+"",
-      PanelSessionPresentationDuration : this.eventInitiation5.value.panelSessionPreparation+"",
-      PanelDiscussionDuration : this.eventInitiation5.value.panelDiscussionDuration+"",
-      QASessionDuration : this.eventInitiation5.value.qaSession+"",
-      BriefingSession : this.eventInitiation5.value.briefingDuration+"",
-      TotalSessiionHours : this.totalHours+"",
-      Rationale :this.eventInitiation6.value.rationale
-
+  submitForm()
+  {
+    const classIfinalData = {
+      EventTopic : this.eventInitiation2.value.eventTopic,
+      EventType : this.eventDetails.find(event => event.EventTypeId == this.eventCode ).EventType,
+      EventDate  : new Date(this.eventInitiation1.value.eventDate),
+      StartTime : "12:00 AM",
+      EndTime : "01:00 PM",
+      VenueName : this.eventInitiation2.value.venueName,
+      State : this.allStates.find(state => state.StateId == this.eventInitiation2.value.state).StateName,
+      City : this.allCity.find(city => city.CityId == this.eventInitiation2.value.city).CityName,
+      BrandName : this._getBrandWithId(this.eventInitiation3.value.brandName).BrandName,
+      HCPRole :   (this.eventInitiation4.value.hcpRole !== 'H6')? this.hcpRoles.find(role =>  role.HCPRoleID === this.eventInitiation4.value.hcpRole).HCPRole : this.hcpRoleWritten, 
+      InitiatorName : this.auth.decodeToken()['unique_name'],
+      PercentAllocation : this.percentageAllocation.toString(),
+      ProjectId : this.projectId,
+      BeneficiaryName : this.benificiaryName,
+      BankAccountNumber : this.panalselectionstandard.value.bankAccountNumber,
+      PanName : this.nameAsPan,
+      PanCardNumber : this.panCardNumber,
+      IfscCode : this.ifscCode,
+      EmailId : this.emailId,
     }
-    // console.log(class1FinalData2)
+    this.utilityService.postEvent1Data1(classIfinalData).subscribe( res =>
+      {
+console.log('before posting data is',res);
+        alert('Event Submitted Successfully');
+        this.router.navigate(['dashboard']);
+        
+console.log('after posting data is',res);
+
+    })
   }
 
-  */
+//   // getRemuneration(speciality,tier){
+//   //   this.utilityService.getFmv(speciality,tier).subscribe(
+//   //     res => {
+//   //       console.log(res)
+//   //       this.remunerationToCalculate = res;
+//   //     },
+//   //     err => {
+//   //       alert("Unexpected Error Happened")
+//   //     }
+//   //   )
+//   // }
+
+// /*
+//   // Event Initiation Form6 Control
+//   showUploadNOC : boolean = false;
+//   showRationale :boolean = false;
+//   showOtherCurrencyTextBox : boolean = false;
+
+//   vendorDetails : any ;
+//   filteredAccounts : any;
+
+//   isHonararium : boolean = false;
+//   isVendorPresent : boolean = false;
+//   // Additional Values:
+//   currency : string = '';
+//   otherCurrency : string = ''
+//   taxSelect : string = '';
+//   benificiaryName : string = ''
+//   bankAccountNumber : string = ''
+//   nameAsPan : string = ''
+//   panCardNumber : string = ''
+//   ifscCode : string = ''
+//   emailId : string = ''
+//   uploadPAN : any = '';
+//   uploadCheque : any = '';
+
+//   event6FormPrepopulate(){
+//     this.eventInitiation6.valueChanges.subscribe(
+//       changes => {
+//         console.log(changes)
+//         if(changes.currency == 'other'){
+//           this.showOtherCurrencyTextBox = true;
+//         }
+//         else{
+//           this.showOtherCurrencyTextBox = false
+//         }
+//         if(changes.isHonararium == "Yes"){
+//           this.isHonararium = true;
+//           // this.eventInitiation6.get('bankAccountNumber').enable();
+          
+//         }
+//         else{
+//           this.isHonararium = false
+//           this.bankAccountNumber = '';
+//           this.nameAsPan = '';
+//           this.panCardNumber = '';
+//           this.ifscCode = '';
+//           this.emailId = '';
+//         }
+//         if(changes.bankAccountNumber){
+//           // console.log(changes.bankAccountNumber)
+//           // console.log(this._filterBankAccounts(changes.bankAccountNumber))
+//           this.filteredAccounts = this._filterBankAccounts(changes.bankAccountNumber);
+//           if(this.eventInitiation6.controls.bankAccountNumber.valid){
+//             // console.log(this._getSelectedBankDetails(changes.bankAccountNumber))
+//             const filteredVendor = this._getSelectedBankDetails(changes.bankAccountNumber);
+//             if(filteredVendor){
+//               this.isVendorPresent = true;
+//               this.bankAccountNumber = filteredVendor.BankAccountNumber;
+//               this.benificiaryName = filteredVendor.BeneficiaryName;
+//               this.nameAsPan = filteredVendor.PanCardName;
+//               this.panCardNumber = filteredVendor.PanNumber;
+//               this.ifscCode = filteredVendor.IfscCode
+//             }
+//           }
+//         }
+//       }
+//     )
+//   }
+//   private _getSelectedBankDetails(acctNumber : any){
+//     return this.vendorDetails.find(ven => {
+//       if(ven.BankAccountNumber){
+//         // console.log(typeof ven.BankAccountNumber);
+//         // console.log(typeof acctNumber)
+//         return ven.BankAccountNumber == acctNumber
+//       }
+//     })
+//   }
+
+//   private _filterBankAccounts(value: string): string[] {
+//     // console.log(this.employeeDetails)
+//     const filterValue = value.toLowerCase();
+    
+//     return this.vendorDetails.filter(ven =>{
+      
+//       if(ven.BankAccountNumber){
+//         const bannAccNum = ven.BankAccountNumber.toString();
+        
+//         return bannAccNum.includes(filterValue);
+//       }
+      
+//     })
+//   }
+
+//   // Event Inititaion Form7 COntrol
+//   showExpenseTextBox : boolean = false;
+//   showTotalExpense : boolean = false;
+
+//   expenseTableDetails : any;
+//   localConveyanceNeeded : boolean = false;
+
+//   event7FormPrepopulate(){
+//     this.eventInitiation7.valueChanges.subscribe(
+//       changes => {
+      
+//         if(changes.expense == 'e2'){
+//           this.showExpenseTextBox = true;
+//         }
+//         else{
+//           this.showExpenseTextBox = false;
+//         }
+//         if(changes.toCalculateExpense == 'Yes'){
+//           this.showTotalExpense = true;
+//         }
+//         else{
+//           this.showTotalExpense = false;
+//         }
+//         if(changes.isLocalConveyance == 'Yes'){
+//           this.localConveyanceNeeded = true;
+//         }
+//         else this.localConveyanceNeeded = false;
+
+//         if(changes.invitee && changes.expense && changes.isAdvanceRequired && changes.isExcludingTax && changes.isBtc){
+//           console.log(changes)
+//         }
+//       }
+//     )
+//   }
+
+//   addInviteesToTable(){
+//     const invitee = {
+//       invitee : 'aa'
+//     };
+
+//   }  
+  
+  
+
+
+//   submitForm(){
+//     // console.log(this.eventInitiation1.value);
+//     // console.log(this.eventInitiation2.value);
+//     // console.log(this.eventInitiation3.value);
+//     // console.log(this.eventInitiation4.value);
+//     // console.log(this.eventInitiation5.value);
+//     // console.log(this.eventInitiation6.value);
+//     // console.log(this.eventInitiation7.value);
+
+//     if(this.eventInitiation2.value.eventTopic &&  this.eventCode && this.eventInitiation2.value.eventDate &&
+//       this.eventInitiation2.value.startTime && this.eventInitiation2.value.endTime  && this.eventInitiation2.value.venueName &&
+//       this.eventInitiation2.value.state && this.eventInitiation2.value.city && this.eventInitiation7.value.isAdvanceRequired &&
+//       this.eventInitiation3.value.brandName && this.eventInitiation4.value.hcpRole && this.percentageAllocation &&  this.projectId){
+//         const class1FinalData1 = {
+//           EventTopic : this.eventInitiation2.value.eventTopic,
+//           EventType : this.eventDetails.find(event => event.EventTypeId == this.eventCode ).EventType,
+//           EventDate : new Date(this.eventInitiation2.value.eventDate),
+//           StartTime : this.eventInitiation2.value.startTime,
+//           EndTime : this.eventInitiation2.value.endTime,
+//           VenueName : this.eventInitiation2.value.venueName,
+//           State : this.allStates.find(state => state.StateId == this.eventInitiation2.value.state).StateName,
+//           City : this.allCity.find(city => city.CityId == this.eventInitiation2.value.city).CityName,
+//           // BeneficiaryName : this.benificiaryName,
+//           // BankAccountNumber : this.eventInitiation6.value.bankAccountNumber,
+//           // PanName : this.nameAsPan,
+//           // PanCardNumber : this.panCardNumber,
+//           // IfscCode : this.ifscCode,
+//           // EmailId : this.emailId,
+//           // Invitees : this.eventInitiation7.value.invitee,
+//           IsAdvanceRequired : this.eventInitiation7.value.isAdvanceRequired || 'No',
+//           // SelectionOfTaxes : this.taxSelect,
+//           BrandName : this._getBrandWithId(this.eventInitiation3.value.brandName).BrandName,
+//           HCPRole :   (this.eventInitiation4.value.hcpRole !== 'H6')? this.hcpRoles.find(role =>  role.HCPRoleID === this.eventInitiation4.value.hcpRole).HCPRole : this.hcpRoleWritten, 
+//           // InitiatorName : this.auth.decodeToken()['unique_name'],
+//           PercentAllocation : this.percentageAllocation.toString(),
+//           ProjectId : this.projectId,
+//         }
+//         console.log(class1FinalData1)
+//         this.utilityService.postEvent1Data1(class1FinalData1).subscribe(
+//           res => {
+//             console.log("Data added successfully");
+//             alert('Event Submitted Successfully');
+//             this.router.navigate(['dashboard']);
+            
+//           },
+//           err => alert("Not Added")
+//         )
+
+//       }
+//       else{
+//         alert("Some Fields are missing")
+//       }
+    
+
+//     const class1FinalData2 = {
+//       HcpRoleId : this.eventInitiation4.value.hcpRole,
+//       MISCode : this.eventInitiation4.value.misCode,
+//       SpeakerCode : this.speakerCode,
+//       TrainerCode : "null",
+//       HonarariumRequired : this.eventInitiation6.value.isHonararium,
+//       Speciality : this.speciality,
+//       Tier : this.tier,
+//       'Go/NGo' : this.goNonGo,
+//       PresentationDuration : this.eventInitiation5.value.presentationDuration+"",
+//       PanelSessionPresentationDuration : this.eventInitiation5.value.panelSessionPreparation+"",
+//       PanelDiscussionDuration : this.eventInitiation5.value.panelDiscussionDuration+"",
+//       QASessionDuration : this.eventInitiation5.value.qaSession+"",
+//       BriefingSession : this.eventInitiation5.value.briefingDuration+"",
+//       TotalSessiionHours : this.totalHours+"",
+//       Rationale :this.eventInitiation6.value.rationale
+
+//     }
+//     // console.log(class1FinalData2)
+//   }
+
+//   */
 
   @HostListener('window:resize',['$event'])
     onResize(event:Event){
