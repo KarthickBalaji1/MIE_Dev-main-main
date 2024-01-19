@@ -17,6 +17,8 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { MatStepperModule} from '@angular/material/stepper';
 import { MatRadioModule} from '@angular/material/radio'
+import {MatCheckboxModule} from '@angular/material/checkbox';
+
 
 
 
@@ -54,7 +56,8 @@ import { Class1EventRequestComponent } from '../event-request-form/class1-event-
     MatAutocompleteModule,
     MatStepperModule,
     MatRadioModule,
-    UtilityModule
+    UtilityModule,
+    MatCheckboxModule
   ],
   declarations: [
     DashboardComponent,

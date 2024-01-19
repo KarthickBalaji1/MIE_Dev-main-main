@@ -18,9 +18,9 @@ export class PostEventSettlementComponent implements OnInit {
     constructor() {
   
       this.PostEventSettlement = new FormGroup({
-        dayssince: new FormControl('',Validators.required),
+       // dayssince: new FormControl('',Validators.required),
         uploadDeviation: new FormControl('',Validators.required),
-        newExpense: new FormControl('',Validators.required),
+        TotalAttendance: new FormControl('',Validators.required),
         itCompanysBTCBTE: new FormControl('',Validators.required),
         Expense: new FormControl('',Validators.required),
         costperparticipant: new FormControl('',Validators.required),
