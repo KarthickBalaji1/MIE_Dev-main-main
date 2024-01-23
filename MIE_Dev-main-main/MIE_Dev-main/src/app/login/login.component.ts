@@ -7,8 +7,8 @@ import {CredentialResponse,PromptMomentNotification} from 'google-one-tap'
 import { Component, OnInit, NgZone } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
-import { UserServiceService } from 'src/app/services/user-service.service';
+import { AuthService } from '../shared/services/auth/auth.service';
+import { UserUtility } from '../shared/services/user-utility/user-utility.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
   isInvalidCredentials: boolean = false;
   isFormError : boolean = false;
 
-  constructor(private userService: UserServiceService,
+  constructor(private userService: UserUtility,
               private authService: AuthService, 
               private router: Router,
               private _ngZone:NgZone) { 
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
     })
   }
 
-  loginUser(){
+ public loginUser(){
     
   
     if(this.login.valid){
@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
+ public ngOnInit(): void {
     
    
     this.googleSignOn();
@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit {
   // Implementation of google single sign on
 
   private googleClientId : string = environment.googleClientId;
-  googleSignOn(){
+  private googleSignOn(){
     {
       google.accounts.id.initialize({
         client_id: this.googleClientId,

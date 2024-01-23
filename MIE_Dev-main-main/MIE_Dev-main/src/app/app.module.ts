@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { NavModule } from './nav/nav.module';
-import { PublicLayoutComponent } from './public-layout/public-layout.component';
+import { PublicLayoutComponent } from './layout/public-layout.component';
 import { LoginComponent } from './login/login.component';
 
 
@@ -28,6 +28,7 @@ import { LoginComponent } from './login/login.component';
     AppComponent,
     PublicLayoutComponent,
     LoginComponent,
+    
 
   ],
   providers: [],

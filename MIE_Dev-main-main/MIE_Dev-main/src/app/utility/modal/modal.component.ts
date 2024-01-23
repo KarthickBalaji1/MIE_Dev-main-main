@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { AddEmployeesComponent } from 'src/app/add-employees/add-employees.component';
-import { UtilityService } from 'src/app/services/utility.service';
+import { AddEmployeesComponent } from 'src/app/main/add-employees/add-employees.component';
+import { UtilityService } from 'src/app/shared/services/event-utility/utility-service.service';
 
 
 @Component({
@@ -25,6 +25,64 @@ export class ModalComponent implements OnInit {
 
   text : string = "closed";
 
+  // Brand Details
+  brandUpdateForm : FormGroup;
+  showBrandForm : boolean = false;
+
+  brandDetails : any;
+  brandName : string;
+  percentageAllocation : number;
+  projectId : string;
+
+  // HCP Update
+  showHCPForm : boolean = false;
+
+  hcpUpdateForm : FormGroup;
+
+
+  private hcpRole : string;
+  private hcpName : string;
+  private misCode : string;
+  private goNonGo : string;
+  private honarariumAmount : string;
+  private travelAmount : string;
+  private localconveyanceAount : string;
+  private accomAmount : string;
+
+
+  
+  // Invitee Update
+  showInviteeForm : boolean = false;
+
+  inviteeUpdateForm : FormGroup;  
+
+  private inviteeName : string;
+  private localConveyance : string;
+  private lcAmount : string;
+  private btc : string;
+
+  // Expense Update
+  showExpenseForm : boolean = false;
+
+  expenseUpdateForm : FormGroup;
+
+  private expenseType : string;
+  private expenseAmount : string;
+  private isExcludingTax : string;
+  private isExpenseBtc : string;
+
+
+  //honorarium update form
+  showhonorariumForm : boolean = false;
+
+  honorariumUpdateForm :FormGroup;
+
+  hcprole : any;
+  hcpname : string;
+  miscode : number;
+  GONGO : string;
+  isExclucingTax:string;
+
   constructor(public dialogRef : MatDialogRef<AddEmployeesComponent>,
     @Inject(MAT_DIALOG_DATA) public data,
     private utilityService : UtilityService){
@@ -40,20 +98,103 @@ export class ModalComponent implements OnInit {
       )
     
     // this.fName = data.name
-    this.roleId = data.RoleId;
-    this.firstName = data.FirstName;
-    this.lastName = data.LastName;
-    this.userName = data.CreatedBy;
-    this.roleName = data.RoleName;
+  
    
+    // console.log(data);
+    if(data.BrandName){
+      console.log(data);
+      this.brandDetails = data;
+      this.showBrandForm = true;
+      this.brandName = data.BrandName;
+      this.percentageAllocation = data.PercentAllocation;
+      this.projectId = data.ProjectId;
+    }
+    else if(data.HcpRole){
+      this.showHCPForm = true;
+      this.hcpRole = data.HcpRole;
+      this.hcpName = data.HcpName;
+      this.misCode = data.MisCode
+      this.goNonGo = data.GOorNGO;
+      this.honarariumAmount = data.HonarariumAmount;
+      this.localconveyanceAount = data.Travel;
+      this.travelAmount = data.LocalConveyance;
+      this.accomAmount = data.Accomdation;
+    }
+    else if(data.InviteeName){
+      this.showInviteeForm = true;
+      this.inviteeName = data.InviteeName;
+      this.localConveyance = data.LocalConveyance;
+      this.btc = data.BtcorBte;
+      this.lcAmount = data.LcAmount
+    }
+    else if(data.Expense){
+      this.showExpenseForm = true;
 
-    console.log(data)
+      this.expenseType = data.Expense;
+      this.expenseAmount = data.Amount;
+      this.isExpenseBtc = data.AmountExcludingTax;
+      this.isExcludingTax = data.BtcorBte;
+    }
+    else if(data.forHonararium){
+      this.showhonorariumForm = true;
+    }
+    else{
+      this.showBrandForm = false;
+      this.showHCPForm = false;
+      this.showInviteeForm = false;
+      this.showExpenseForm = false;
+      this.showhonorariumForm = false;
+      this.roleId = data.RoleId;
+      this.firstName = data.FirstName;
+      this.lastName = data.LastName;
+      this.userName = data.CreatedBy;
+      this.roleName = data.RoleName;
+    }
+
+    this.brandUpdateForm = new FormGroup({
+      brandName : new FormControl({value: this.brandName, disabled: true}),
+      percentageAllocation : new FormControl(this.percentageAllocation),
+      projectId : new FormControl({value: this.projectId, disabled: true})
+    })
+
+    this.hcpUpdateForm = new FormGroup({
+      hcpRole : new FormControl({value:this.hcpRole,disabled:true}),
+      hcpName : new FormControl({value:this.hcpName,disabled:true}),
+      misCode : new FormControl({value:this.misCode,disabled:true}),
+      goNonGo : new FormControl({value:this.goNonGo,disabled:true}),
+      honarariumAmount : new FormControl({value:this.honarariumAmount,disabled:true}),
+      travelAmount : new FormControl({value:this.travelAmount,disabled:true}),
+      localConAmount : new FormControl({value:this.localconveyanceAount,disabled:true}),
+      accomAmount : new FormControl({value:this.accomAmount,disabled:true})
+    })
+
+    this.inviteeUpdateForm = new FormGroup({
+      inviteeName : new FormControl({value:this.inviteeName,disabled:true}),
+      isLocalConveyance : new FormControl({value:this.localConveyance,disabled:true}),
+      btc : new FormControl({value:this.btc,disabled:true}),
+      lcAmount : new FormControl({value:this.lcAmount,disabled:true})
+    })
+
+    this.expenseUpdateForm = new FormGroup({
+      expenseType : new FormControl({value:this.expenseType, disabled: true}),
+      expenseAmount : new FormControl({value: this.expenseAmount, disabled:true}),
+      isExclucingTax : new FormControl({value:this.isExcludingTax,disabled:true}),
+      isExpenseBtc : new FormControl({value:this.isExpenseBtc,disabled:true})
+    })
 
     this.updateForm = new FormGroup({
       firstName : new FormControl(this.firstName,[Validators.required]),
       lastName : new FormControl(this.lastName,[Validators.required]),
       userName : new FormControl(this.userName, [Validators.required]),
       roleName : new FormControl(this.roleId, [Validators.required])
+    })
+
+    this.honorariumUpdateForm = new FormGroup ({
+      hcprole : new FormControl(this.hcpName,[Validators.required]),
+      hcpname : new FormControl(this.hcpName,[Validators.required]),
+      miscode : new FormControl(this.misCode,[Validators.required]),
+      GONGO : new FormControl(this.GONGO,[Validators.required]),
+      isExclucingTax : new FormControl(this.isExclucingTax,[Validators.required])
     })
   }
 
@@ -84,6 +225,25 @@ export class ModalComponent implements OnInit {
       this.dialogRef.close(this.data)
     }
 
+  }
+
+  updateBrand(){
+    this.brandDetails.PercentAllocation = this.brandUpdateForm.controls.percentageAllocation.value;
+    // console.log(this.brandDetails)
+    this.dialogRef.close(this.brandDetails)
+
+  }
+
+  updateHCP(){
+
+  }
+
+  updateInvitee(){
+
+  }
+
+  updateExpense(){
+    
   }
 
   ngOnInit(): void {
