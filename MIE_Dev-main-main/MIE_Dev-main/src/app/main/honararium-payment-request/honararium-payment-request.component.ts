@@ -43,7 +43,8 @@ export class HonarariumPaymentRequestComponent implements OnInit {
       uploadDetails: new FormControl(''),
       isItIncludingGST: new FormControl(''),
       isInviteeslessthan5: new FormControl(''),
-      UploadDetails1: new FormControl('')
+      UploadDetails1: new FormControl(''),
+      EventId: new FormControl('')
     })
     this.After2WorkingDays(this.utilityService.getPreviousEvents());
     
@@ -52,6 +53,17 @@ export class HonarariumPaymentRequestComponent implements OnInit {
   ngOnInit(): void {
     this.showUpload();
     this.showingDetails();
+    this.honorarium.valueChanges.subscribe(changes=>
+      {
+        if(changes.EventId){
+          this.honortableDetails = [];
+          console.log(changes.EventId)
+          this.selectedEvent = changes.EventId;
+          this.filterHonor(changes.EventId);
+          // console.log(this.honortableDetails);
+          
+        }
+      })
     // console.log(this.length);
   }
 
@@ -92,17 +104,8 @@ export class HonarariumPaymentRequestComponent implements OnInit {
 
     this.utilityService.honorariumDetails().subscribe(honoDetails => {
       this.honorarDetails = honoDetails;
-      this.eventListafter2days.forEach(event2 => {
-        this.honorarDetails.forEach(honorevent => {
-        this.honortableDetails.push(honorevent);
-        })
-      })
-
-      for(let i=0;i<this.honortableDetails.length;i++){
-        this.gstRadio.push('gst'+i)
-        this.disableGST.push(true);
-      }
-
+      // this.filterHonor();
+      
      
     })
   }
@@ -110,10 +113,31 @@ export class HonarariumPaymentRequestComponent implements OnInit {
   gstRadio : any[] = [];
   disableGST : any[] = [];
 
+  selectedEvent : any;
+
+  filterHonor(eventId:any){
+    console.log(eventId);
+   if(Boolean(this.honorarDetails))
+   {
+    
+    this.honorarDetails.forEach(data =>{
+      console.log(data['EventId/EventRequestId']);
+      if(data['EventId/EventRequestId'] == eventId){
+        this.honortableDetails.push(data);
+      }
+    })
+   }
+  
+
+    for(let i=0;i<this.honortableDetails.length;i++){
+      this.gstRadio.push(i)
+      this.disableGST.push(true);
+    }
+
+  }
+
   onSubmit()
   {
-
-    
     let honorariumData :any[] =[] ;
 
     console.log(this.eventTypeForId)
@@ -148,10 +172,25 @@ export class HonarariumPaymentRequestComponent implements OnInit {
 
   }
 
-  checkGST(value : any,index:number){
-    if(value == 'Yes'){
-      console.log(index)
+  idShown : any[] = [];
+  checkGST(option : any, name : string, id : string){
+    // if(this.idShown.indexOf(id) == -1){
+    //   this.idShown.push(id);
+    // }
+    console.log(id)
+    if(option == 'Yes')
+    {
+      this.disableGST[id] = false;
     }
+    else
+    {
+      this.disableGST[id] = true;
+
+    }
+
+    // if(value == "Yes"){
+    //   console.log(index)
+    // }
   }
 
  

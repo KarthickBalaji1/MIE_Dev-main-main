@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 import { MenariniApiUrl } from '../../config/menarini-api-url-config';
 
 
@@ -169,5 +169,17 @@ import { MenariniApiUrl } from '../../config/menarini-api-url-config';
     return this._http.get(MenariniApiUrl.getExpenseData);
   }
 
+  //file uploading
+  fileUpload(formData: any)
+  {
+     return this._http.post(MenariniApiUrl.fileuploading, formData)
+  }
 
-}
+   // Get All Expense Type
+   getExpenseType()
+   {
+    return this._http.get(MenariniApiUrl.getexpenseType);
+    }
+       
+  }
+

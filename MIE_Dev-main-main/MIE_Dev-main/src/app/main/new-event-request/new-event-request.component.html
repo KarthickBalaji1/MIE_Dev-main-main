@@ -31,8 +31,10 @@
                               <app-class1-event-request *ngIf="selectedEvent == 'EVTC1'"></app-class1-event-request>
 
                               <app-stall-fabrication-event-request *ngIf="selectedEvent == 'EVTSF'"></app-stall-fabrication-event-request>
-
-                              <div *ngIf="selectedEvent !== 'select' && selectedEvent !=='EVTC1' && selectedEvent !== 'EVTSF'">
+                             
+                              <app-webinar-event-request *ngIf="selectedEvent == 'EVTWEB'"></app-webinar-event-request>
+                              
+                              <div *ngIf="selectedEvent !== 'select' && selectedEvent !=='EVTC1' && selectedEvent !== 'EVTSF' && selectedEvent !== 'EVTWEB'">
                                 OOPS!!!! No other Event Forms yet developed
                               </div>
                       </div>

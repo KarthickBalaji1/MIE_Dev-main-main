@@ -81,6 +81,12 @@ export const MenariniApiUrl = {
      getInviteesData : Url + "/GetRequestSheets/GetInviteesData",
 
      // getting expense for post event settlement
-     getExpenseData : Url + "/GetRequestSheets/GetExpenseData"
+     getExpenseData : Url + "/GetRequestSheets/GetExpenseData",
+     
+     // file uploading
+     fileuploading : Url + "/Temp/AddFormData",
+
+     //getting expense types
+     getexpenseType:  Url +'/GetMasterSheets/GetExpenseTypeMasterData'
 }
 

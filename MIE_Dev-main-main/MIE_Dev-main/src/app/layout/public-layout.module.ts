@@ -44,6 +44,7 @@ import { UtilityModule } from '../utility/utility.module';
 
 import { Class1EventRequestComponent } from '../main/event-request-form/class1-event-request/class1-event-request.component';
 import { StallFabricationEventRequestComponent } from '../main/event-request-form/stall-fabrication-event-request/stall-fabrication-event-request/stall-fabrication-event-request.component';
+import { WebinarEventRequestComponent } from '../main/event-request-form/webinar-event-request/webinar-event-request.component';
 
 @NgModule({
   imports: [
@@ -79,7 +80,8 @@ import { StallFabricationEventRequestComponent } from '../main/event-request-for
     PostEventListComponent,
     AddEmployeesComponent,
     Class1EventRequestComponent,
-    StallFabricationEventRequestComponent
+    StallFabricationEventRequestComponent,
+    WebinarEventRequestComponent
     
   ]
 })

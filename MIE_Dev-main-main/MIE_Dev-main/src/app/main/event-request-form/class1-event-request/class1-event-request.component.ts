@@ -5,6 +5,9 @@ import { AuthService } from 'src/app/shared/services/auth/auth.service';
 import { UtilityService } from 'src/app/shared/services/event-utility/utility-service.service';
 import { ModalComponent } from 'src/app/utility/modal/modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { HttpClient, HttpClientModule,HttpHeaders } from '@angular/common/http';
+import { throwError } from 'rxjs';
+
 
 @Component({
   selector: 'app-class1-event-request',
@@ -37,6 +40,7 @@ export class Class1EventRequestComponent implements OnInit {
   eventDetails : any;
   hcpRoles : any
   vendorDetails : any;
+  expenseType : any
   
  
 
@@ -131,6 +135,11 @@ export class Class1EventRequestComponent implements OnInit {
     // Get Vendor Details
     utilityService.getVendorDetails().subscribe(
       res => this.vendorDetails = res
+    )
+
+    // Get Expense Types
+    utilityService.getExpenseType().subscribe(
+      res => this.expenseType = res
     )
 
     // Get Invitees From HCP Master 
@@ -1037,10 +1046,7 @@ export class Class1EventRequestComponent implements OnInit {
       alert("Travel Deatails are missing")
       hcpValidity++;
     }
-    if(this.eventInitiation4Sub.value.isAdvanceRequired.invalid){
-      alert("Is advance required is missing");
-      hcpValidity++;
-    }
+    
     if(this.eventInitiation4Sub.value.isLocalConveyance == "Yes" && this.eventInitiation4Sub.value.localConveyanceAmount == 0){
       alert("Local Conveyance Amount is missing");
       hcpValidity++;
@@ -1592,7 +1598,7 @@ export class Class1EventRequestComponent implements OnInit {
         MisCode : this.filteredInviteeMisCode+'',
         InviteeName : this.inviteeSelectionForm.value.inviteeName,
         LocalConveyance :  this.inviteeSelectionForm.value.isInviteeLocalConveyance,
-        BtcorBte : (Boolean(this.inviteeSelectionForm.value.inviteeBTC))? this.inviteeSelectionForm.value.inviteeBTC : ' ',
+        BtcorBte : (Boolean(this.inviteeSelectionForm.value.inviteeBTC))? this.inviteeSelectionForm.value.inviteeBTC : 'NIL',
         LcAmount : (this.showInviteeLocalConveyance)?this.inviteeSelectionForm.value.inviteeLocalConveyanceAmount+'':0+'',
       }
       this.inviteeTableDetails.push(inviteeData);
@@ -1632,7 +1638,7 @@ export class Class1EventRequestComponent implements OnInit {
     
     this.expenseSelectionForm.valueChanges.subscribe(
       changes => {
-        if(changes.expenseType == 'foodAndBeverages'){
+        if(changes.expenseType == 'Food & Beverages tax amoun'){
           if(changes.expenseAmount/this.inviteeTableDetails.length > 1500){
             this.showExpenseDeviation = true;
           }
@@ -1750,7 +1756,6 @@ export class Class1EventRequestComponent implements OnInit {
       alert("Expense Selection is missing");
     }
 
-
     
     if(this.isStep1Valid && this.isStep2Valid && this.isStep3Valid && this.isStep4Valid && this.isStep5Valid && this.isStep6Valid && this.isStep7Valid){
       let class1EventData = {
@@ -1767,8 +1772,8 @@ export class Class1EventRequestComponent implements OnInit {
         ProjectId: " ",
         HcpRole : " ",
         IsAdvanceRequired: this.eventInitiation4Sub.value.isAdvanceRequired,
-        EventOpen30days: (this.show30DaysUploaDeviation)?'Yes':'No',
-        EventWithin7days : (this.show7DaysUploadDeviation)?'Yes':'No'
+        EventOpen30days: (this.show30DaysUploaDeviation)? 'Yes' : 'No',
+        EventWithin7days : (this.show7DaysUploadDeviation)? 'Yes' : 'No'
       }
       const class1 = {
         Class1 : class1EventData,
@@ -1782,12 +1787,11 @@ export class Class1EventRequestComponent implements OnInit {
   
       console.log(class1)
       this.utilityService.postClass1PreEventRequest(class1).subscribe(res => {
-        console.log(res);
-        if(res.status == 200){
+        console.log(res)
+        if(res.Status == 200){
           alert("Event is submitted Succesfully");
           this.router.navigate(['dashboard'])
         }
-
       },
       err => console.log(err))
     }
@@ -1827,11 +1831,19 @@ export class Class1EventRequestComponent implements OnInit {
   // File Upload Check
   selectedFile : File | null;
   onFileSelected(event:any){
-    this.selectedFile = event.target.files[0];
-    const formData = new FormData();
-    formData.append('File 1', this.selectedFile);
-    console.log(formData.get('File 1'))
-   
+    //debugger
+     if(event.target.files.length>0)
+     {
+      const fileUploadModel = event.target.files[0];
+      const formData = new FormData();
+      formData.append('fileUploadModel',fileUploadModel);
+      this.utilityService.fileUpload(formData).subscribe((res=>
+        {
+         // debugger
+        }))
+     
+     
+     }
   }
 
 
@@ -1844,6 +1856,7 @@ export class Class1EventRequestComponent implements OnInit {
   //Min Date
   today:string = new Date().toISOString().split('T')[0];
 }
+
 
 
 function endTimeValidator(control : AbstractControl): ValidationErrors | null{

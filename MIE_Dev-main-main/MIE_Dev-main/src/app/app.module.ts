@@ -27,7 +27,8 @@ import { LoginComponent } from './login/login.component';
   declarations: [
     AppComponent,
     PublicLayoutComponent,
-    LoginComponent,
+    LoginComponent
+    
     
 
   ],
